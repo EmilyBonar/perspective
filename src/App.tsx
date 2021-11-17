@@ -46,13 +46,24 @@ function App() {
 
 	useEffect(() => {
 		if (moveables.length > number) {
-			setMoveables((prev) => prev.slice(0, -(number - moveables.length)));
+			setMoveables((prev) => prev.slice(0, -(moveables.length - number)));
 		} else if (moveables.length < number) {
-			setMoveables((prev) => [...prev, generateMoveables()]);
+			setMoveables((prev) => [
+				...prev,
+				...generateMoveables(number - moveables.length),
+			]);
 		}
 	}, [number, moveables.length]);
 
-	const generateMoveables = (): Moveable => {
+	const generateMoveables = (quantity: number): Moveable[] => {
+		const moveableArr = [];
+		for (let i = 0; i < quantity; i++) {
+			moveableArr.push(generateMoveable());
+		}
+		return moveableArr;
+	};
+
+	const generateMoveable = (): Moveable => {
 		return {
 			position: {
 				x: (Math.random() - 0.5) * (size.width ?? 0) * 0.75,

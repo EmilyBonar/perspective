@@ -31,7 +31,7 @@ const colors = [
 ];
 
 function App() {
-	const [number, setNumber] = useState(3);
+	const [number, setNumber] = useState(5);
 	const [moveables, setMoveables] = useState<Moveable[]>([]);
 	const mousePos = useMousePosition();
 	const size: Size = useWindowSize();
@@ -82,7 +82,7 @@ function App() {
 					type='range'
 					value={number}
 					onChange={updateQuantity}
-					max={10}
+					max={14}
 					min={1}
 				/>
 			</div>

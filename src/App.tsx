@@ -24,7 +24,6 @@ const colors = [
 	"bg-red-500",
 	"bg-blue-500",
 	"bg-green-500",
-	"bg-gray-500",
 	"bg-yellow-500",
 	"bg-indigo-500",
 	"bg-purple-500",
@@ -69,15 +68,24 @@ function App() {
 	}, []);
 
 	return (
-		<div ref={domTarget} className='h-full absolute w-full flex flex-col'>
-			<input
-				className='mx-auto w-80'
-				type='range'
-				value={number}
-				onChange={updateQuantity}
-				max={10}
-				min={1}
-			/>
+		<div
+			ref={domTarget}
+			className='h-full absolute w-full flex flex-col bg-gray-100'
+		>
+			<div className='mx-auto flex flex-col items-center gap-2'>
+				<label className='font-bold text-xl' htmlFor='quantity'>
+					Quantity
+				</label>
+				<input
+					id='quantity'
+					className='mx-auto w-80'
+					type='range'
+					value={number}
+					onChange={updateQuantity}
+					max={10}
+					min={1}
+				/>
+			</div>
 			<div className='overflow-hidden relative h-full w-full'>
 				{moveables.map((state) => (
 					<Moveable
@@ -121,7 +129,7 @@ const Moveable: React.FC<MoveableProps> = ({
 
 	const zToScale = useCallback((z?: number): number => {
 		if (!z) return 1;
-		return 1 + clamp(z, -0.75, 1);
+		return 1 + clamp(z, -0.95, 1);
 	}, []);
 
 	const handleDrag: DraggableEventHandler = useCallback(
@@ -141,7 +149,7 @@ const Moveable: React.FC<MoveableProps> = ({
 	const handleScroll: React.WheelEventHandler = useCallback((e) => {
 		e.preventDefault();
 		setBasePos((prev) => {
-			let newZ = clamp((prev.z ?? 0) - e.deltaY / 500, -0.95, 1);
+			let newZ = clamp((prev.z ?? 0) - e.deltaY / 1000, -0.95, 1);
 			console.log(newZ);
 			return { x: prev.x, y: prev.y, z: newZ };
 		});
@@ -158,6 +166,7 @@ const Moveable: React.FC<MoveableProps> = ({
 					y,
 					scale,
 					zIndex: Math.floor(zToScale(basePos.z) * 1000),
+					filter: `grayscale(${(1 - ((basePos.z ?? 0) + 0.95) / 1.95) * 100}%)`,
 				}}
 			/>
 		</DraggableCore>

@@ -45,6 +45,7 @@ function App() {
 	}, [mousePos, size]);
 
 	useEffect(() => {
+		if (!size.height) return;
 		if (moveables.length > number) {
 			setMoveables((prev) => prev.slice(0, -(moveables.length - number)));
 		} else if (moveables.length < number) {
@@ -53,7 +54,7 @@ function App() {
 				...generateMoveables(number - moveables.length),
 			]);
 		}
-	}, [number, moveables.length]);
+	}, [number, moveables.length, size.height]);
 
 	const generateMoveables = (quantity: number): Moveable[] => {
 		const moveableArr = [];
@@ -66,8 +67,8 @@ function App() {
 	const generateMoveable = (): Moveable => {
 		return {
 			position: {
-				x: (Math.random() - 0.5) * (size.width ?? 0) * 0.75,
-				y: (Math.random() - 0.5) * (size.height ?? 0) * 0.75,
+				x: (Math.random() - 0.5) * (size.width ?? 1366) * 0.75,
+				y: (Math.random() - 0.5) * (size.height ?? 784) * 0.75,
 				z: Math.random() * 2 - 1,
 			},
 			color: colors[Math.floor(Math.random() * colors.length)],
@@ -124,16 +125,16 @@ const Moveable: React.FC<MoveableProps> = ({
 	const domTarget = useRef(null);
 	const [basePos, setBasePos] = useState<Position>(initialState.position);
 	const [{ x, y, scale }, api] = useSpring(() => ({
-		x: 0,
-		y: 0,
+		x: basePos.x - (mousePos.x / 2) * (1 + (basePos.z ?? 1)),
+		y: basePos.y - (mousePos.y / 2) * (1 + (basePos.z ?? 1)),
 		scale: 1,
 		config: { mass: 5, tension: 350, friction: 40 },
 	}));
 
 	useEffect(() => {
 		api({
-			x: basePos.x - (mousePos.x / 2) * (1 + (basePos.z ?? 0)),
-			y: basePos.y - (mousePos.y / 2) * (1 + (basePos.z ?? 0)),
+			x: basePos.x - (mousePos.x / 2) * (1 + (basePos.z ?? 1)),
+			y: basePos.y - (mousePos.y / 2) * (1 + (basePos.z ?? 1)),
 			scale: zToScale(basePos.z),
 		});
 	}, [mousePos, basePos]);
@@ -148,8 +149,8 @@ const Moveable: React.FC<MoveableProps> = ({
 			e.preventDefault();
 			setBasePos((prev) => {
 				return {
-					x: (e as MouseEvent).x - (screenSize?.width ?? 0) / 2,
-					y: (e as MouseEvent).y - (screenSize?.height ?? 0) / 2,
+					x: (e as MouseEvent).x - (screenSize.width ?? 1366) / 2,
+					y: (e as MouseEvent).y - (screenSize.height ?? 784) / 2,
 					z: prev.z,
 				};
 			});
@@ -161,7 +162,6 @@ const Moveable: React.FC<MoveableProps> = ({
 		e.preventDefault();
 		setBasePos((prev) => {
 			let newZ = clamp((prev.z ?? 0) - e.deltaY / 1000, -0.95, 1);
-			console.log(newZ);
 			return { x: prev.x, y: prev.y, z: newZ };
 		});
 	}, []);
